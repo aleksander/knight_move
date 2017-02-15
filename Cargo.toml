@@ -1,0 +1,7 @@
+[package]
+name = "knight_move"
+version = "0.1.0"
+authors = ["Aleksander Usov <aleksander.usov@gmail.com>"]
+
+[dependencies]
+libc = "*"
