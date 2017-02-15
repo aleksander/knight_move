@@ -37,6 +37,38 @@ fn main() {
     let mut c: usize = 0;
     let mut maxc: usize = 0;
     let mut f: [[usize; 10]; 10] = [[0; 10]; 10];
+    let mut neighbors: [[Vec<(usize,usize)>; 10]; 10] = [
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+        [Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+    ];
+    for x in 0..10 {
+        for y in 0..10 {
+            for i in 0..MOVES.len() {
+                let (dx,dy) = MOVES[i];
+                let nx = x as isize + dx;
+                let ny = y as isize + dy;
+                if nx >= 0 && nx <= 9 && ny >= 0 && ny <= 9 {
+                    neighbors[x][y].push((nx as usize, ny as usize));
+                }
+            }
+        }
+    }
+    let mut neighbors_count: [[usize; 10]; 10] = [[0; 10]; 10];
+    for x in 0..10 {
+        for y in 0..10 {
+            neighbors_count[x][y] = neighbors[x][y].len();
+            print!("{} ", neighbors_count[x][y]);
+        }
+        println!();
+    }
     let mut i = 0;
     let mut stack: [(usize,isize,isize); 101] = [(0,0,0); 101];
 
