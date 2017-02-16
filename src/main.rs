@@ -59,6 +59,42 @@ fn have_unreachable_points2 (arr: &[[usize; 10]; 10], neighbors_count: &[[usize;
     false
 }
 
+#[inline(always)]
+fn have_unreachable_points3 (arr: &[[usize; 10]; 10], neighbors_count: &[[usize; 10]; 10]) -> bool {
+    for y in 0..10 {
+        for x in 0..10 {
+            if arr[x][y] == 0 {
+                if neighbors_count[x][y] == 0 {
+                    return true;
+                }
+            }
+        }
+    }
+    false
+}
+
+#[inline(always)]
+fn have_unreachable_points4 (arr: &[[usize; 10]; 10], neighbors_count: &[[usize; 10]; 10]) -> bool {
+    let mut single_neighbor_point = 0;
+    for y in 0..10 {
+        for x in 0..10 {
+            if arr[x][y] == 0 {
+                if neighbors_count[x][y] == 0 {
+                    //println!("unreachable ({},{})", x, y);
+                    return true;
+                } else if neighbors_count[x][y] == 1 {
+                    //println!("single ({},{})", x, y);
+                    single_neighbor_point += 1;
+                    if single_neighbor_point > 1 {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    false
+}
+
 const MOVES: [(isize,isize); 8] = [(1,2), (2,1), (2,-1), (1,-2), (-2,-1), (-2,1), (-1,-2), (-1,2)];
 
 fn main() {
@@ -108,50 +144,45 @@ fn main() {
     }
 
     loop {
-        use std::time;
-        let start = time::Instant::now();
-        for _ in 0..1_000_000_000 {
+        //use std::time;
+        //let start = time::Instant::now();
+        //for _ in 0..1_000_000_000 {
             if i < neighbors[x][y].len() {
                 //print!("{}: try move {}: ", c, i);
                 let (nx,ny) = neighbors[x][y][i];
                 if f[nx][ny] == 0 {
-                    // save current position to stack
-                    stack[c] = (i,x,y);
-                    // do move
-                    c += 1;
-                    //println!("move ({},{}) -> ({},{})", x, y, nx, ny);
-                    x = nx;
-                    y = ny;
                     // save new position to field
-                    f[x][y] = c + 1;
-                    for &(nx,ny) in neighbors[x][y].iter() {
-                        neighbors_count[nx][ny] -= 1;
-                    }
-                    //print_array(&f);
-                    if c == 99 {
-                        println!("solution is found!");
-                        print_array(&f);
-                    }
-                    // reset move counter
-                    i = 0;
-                    if have_unreachable_points2(&f, &neighbors_count, &neighbors, (x,y)) {
-                        //println!("{}: isolated points!", c);
+                    f[nx][ny] = c + 2;
+                    if have_unreachable_points4(&f, &neighbors_count) {
                         //print_array(&f);
                         //unsafe { libc::getchar(); }
-                        // do step back
-                        if c == 0 {
-                            println!("searching is done");
-                            break;
-                        }
-                        f[x][y] = 0;
+                        f[nx][ny] = 0;
+                        i += 1;
+                    } else {
+                        // save current position to stack
+                        stack[c] = (i,x,y);
+                        // do move
+                        c += 1;
+                        //println!("move ({},{}) -> ({},{})", x, y, nx, ny);
+                        x = nx;
+                        y = ny;
                         for &(nx,ny) in neighbors[x][y].iter() {
-                            neighbors_count[nx][ny] += 1;
+                            neighbors_count[nx][ny] -= 1;
                         }
-                        c -= 1;
-                        i = stack[c].0 + 1;
-                        x = stack[c].1;
-                        y = stack[c].2;
-                        //println!("step back");
+                        //print_array(&f);
+                        if c == 99 {
+                            println!("solution is found!");
+                            print_array(&f);
+                            unsafe { libc::getchar(); }
+                        }
+                        if c < 52 {
+                            for ci in 0..c {
+                                print!("{}", stack[ci].0);
+                            }
+                            println!();
+                        }
+                        // reset move counter
+                        i = 0;
                     }
                 } else {
                     // next move
@@ -179,7 +210,7 @@ fn main() {
                 //println!("step back");
             }
             //unsafe { libc::getchar(); }
-        }
-        println!("{:?}", time::Instant::now() - start);
+        //}
+        //println!("{:?}", time::Instant::now() - start);
     }
 }
